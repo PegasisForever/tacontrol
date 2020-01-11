@@ -6,6 +6,10 @@ import okhttp3.Request.Builder
 import okhttp3.RequestBody
 import org.json.simple.JSONArray
 import java.io.IOException
+import java.util.concurrent.TimeUnit
+
+
+
 
 fun main(a: Array<String>) {
     val args = JSONArray()
@@ -25,7 +29,14 @@ fun main(a: Array<String>) {
         .post(args)
         .build()
 
-    val res = OkHttpClient().newCall(request).execute()
+    val res = OkHttpClient.Builder()
+        .connectTimeout(10, TimeUnit.MINUTES)
+        .writeTimeout(10, TimeUnit.MINUTES)
+        .readTimeout(10, TimeUnit.MINUTES)
+        .build()
+        .newCall(request)
+        .execute()
+
     if (!res.isSuccessful) throw IOException("Unexpected code $res")
     println(res.body().string())
 }
